@@ -57,7 +57,6 @@ when '-a'
   month = months[ARGV[1].split('/')[1].to_i - 1]
 
   Dir.open(ARGV[2]) do |_filename|
-    # puts "Filename: #{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt"
     File.open("#{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt") do |line|
       line.seek(390)
       line.readlines.each do |l|
@@ -89,10 +88,17 @@ when '-c'
 
   puts "#{month} #{year}"
   temperatures.each_with_index do |temp, i|
+    # Simple Task Output
+
+    # print "\n#{i + 1} "
+    # print('+'.red * temp[:highest] + " #{temp[:highest]}C")
+    # print "\n#{i + 1} "
+    # print('+'.blue * temp[:lowest] + " #{temp[:lowest]}C")
+
+    # Bonus Task Output
+
     print "\n#{i + 1} "
-    print('+'.red * temp[:highest] + " #{temp[:highest]}C")
-    print "\n#{i + 1} "
-    print('+'.blue * temp[:lowest] + " #{temp[:lowest]}C")
+    print('+'.blue * temp[:lowest] + '+'.red * temp[:highest] + " #{temp[:lowest]}C - #{temp[:highest]}C")
   end
 
 end
