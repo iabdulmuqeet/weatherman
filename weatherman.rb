@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-months = %w[Jan Fed Mar Apr May Jun Jul Aug Sep Oct Nov Dec]
+require 'colorize'
 
-max_temp_hash = { date: '', max_temperature: 0 }
-min_temp_hash = { date: '', min_temperature: 100 }
-max_humidity_hash = { date: '', max_humidity: 0 }
+months = %w[Jan Fed Mar Apr May Jun Jul Aug Sep Oct Nov Dec]
 
 case ARGV[0]
 when '-e'
+  max_temp_hash = { date: '', max_temperature: 0 }
+  min_temp_hash = { date: '', min_temperature: 100 }
+  max_humidity_hash = { date: '', max_humidity: 0 }
+
   Dir.foreach(ARGV[2]) do |filename|
     if filename.split('_')[2] == ARGV[1]
       File.open("#{ARGV[2]}/#{filename}") do |line|
@@ -55,7 +57,7 @@ when '-a'
   month = months[ARGV[1].split('/')[1].to_i - 1]
 
   Dir.open(ARGV[2]) do |_filename|
-    puts "Filename: #{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt"
+    # puts "Filename: #{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt"
     File.open("#{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt") do |line|
       line.seek(390)
       line.readlines.each do |l|
@@ -66,8 +68,31 @@ when '-a'
     end
   end
 
-  puts
   puts "Highest Avgerage: #{(highest_avg.sum(0.0) / highest_avg.size).round(1)}C"
   puts "Lowest Avgerage: #{(lowest_avg.sum(0.0) / lowest_avg.size).round(1)}C"
   puts "Average Humidity: #{(avg_humidity.sum(0.0) / avg_humidity.size).round(1)}%"
+
+when '-c'
+  temperatures = []
+
+  year = ARGV[1].split('/')[0]
+  month = months[ARGV[1].split('/')[1].to_i - 1]
+
+  Dir.open(ARGV[2]) do |_filename|
+    File.open("#{ARGV[2]}/#{ARGV[2]}_#{year}_#{month}.txt") do |line|
+      line.seek(390)
+      line.readlines.each do |l|
+        temperatures << { highest: l.split(',')[1].to_i, lowest: l.split(',')[3].to_i }
+      end
+    end
+  end
+
+  puts "#{month} #{year}"
+  temperatures.each_with_index do |temp, i|
+    print "\n#{i + 1} "
+    print('+'.red * temp[:highest] + " #{temp[:highest]}C")
+    print "\n#{i + 1} "
+    print('+'.blue * temp[:lowest] + " #{temp[:lowest]}C")
+  end
+
 end
